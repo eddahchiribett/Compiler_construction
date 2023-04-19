@@ -13,6 +13,7 @@ statement_list  : statement
 statement   : expression_statement 
             | control_statement 
             | return_statement
+            | print_statement
             ;
             
 expression_statement : expression SEMICOLON ;
@@ -28,7 +29,7 @@ type_keyword    : TYPE_INT
                 ;
 if_statement    : IF LPAREN expression RPAREN LBRACE statement RBRACE 
                 | IF LPAREN expression RPAREN LBRACE statement RBRACE ELSE  LBRACE statement RBRACE
-                | IF LPAREN expression RPAREN LBRACE statement RBRACE ELSE IF LBRACE statement RBRACE  ELSE  LBRACE statement RBRACE
+                | IF LPAREN expression RPAREN LBRACE statement RBRACE ELSE_IF LPAREN expression RPAREN LBRACE statement RBRACE  ELSE  LBRACE statement RBRACE SEMICOLON
                 ;
 while_statement : WHILE LPAREN expression RPAREN LBRACE statement RBRACE;
 
@@ -37,6 +38,7 @@ do_while_statement : DO LBRACE statement RBRACE WHILE LPAREN expression RPAREN;
 for_statement : FOR LPAREN assignment_expression logical_expression assignment_expression RPAREN  LBRACE statement_list RBRACE;
 
 return_statement : RETURN LPAREN expression RPAREN SEMICOLON;
+print_statement : PRINT LPAREN STRING RPAREN SEMICOLON ;
 
 expression  : assignment_expression 
             | logical_expression
@@ -47,6 +49,10 @@ assignment_expression   :type_keyword IDENTIFIER ASSIGN INT
                         |type_keyword IDENTIFIER ASSIGN FLOAT
                         |type_keyword IDENTIFIER ASSIGN TRUE
                         |type_keyword IDENTIFIER ASSIGN FALSE
+                        |type_keyword IDENTIFIER ASSIGN expression MULTIPLY expression
+                        |type_keyword IDENTIFIER ASSIGN expression DIVIDE expression
+                        |type_keyword IDENTIFIER ASSIGN expression PLUS expression
+                        |type_keyword IDENTIFIER ASSIGN expression MINUS expression
                         |type_keyword IDENTIFIER ASSIGN function_call 
                         ;
 logical_expression      : logical_or_expression
