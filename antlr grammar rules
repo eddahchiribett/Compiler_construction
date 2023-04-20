@@ -1,4 +1,4 @@
-parser grammar ExprParser;
+grammar AN_RULES;
 options { tokenVocab=ExprLexer; }
 
 program : function main_function
@@ -63,10 +63,10 @@ logical_expression      : logical_or_expression
                         | logical_not_expression
                         ;
 
-logical_or_expression   : (IDENTIFIER| relational_expression| equality_expression ) LOGICAL_OR (IDENTIFIER | relational_expression | equality_expression )
+logical_or_expression   : (IDENTIFIER| relational_expression | equality_expression ) LOGICAL_OR (IDENTIFIER | relational_expression | equality_expression )
                         ;
 
-logical_and_expression : (IDENTIFIER| relational_expression| equality_expression ) LOGICAL_AND (IDENTIFIER | relational_expression | equality_expression )
+logical_and_expression : (IDENTIFIER| relational_expression | equality_expression ) LOGICAL_AND (IDENTIFIER | relational_expression | equality_expression )
                        ;
 
 logical_not_expression  : LOGICAL_NOT logical_and_expression 
@@ -94,3 +94,17 @@ function_call : IDENTIFIER LPAREN argument_list RPAREN;
 argument_list : type_keyword expression (COMMA type_keyword expression)*;
 number  : INT
         | FLOAT;
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
