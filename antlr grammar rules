@@ -55,6 +55,12 @@ assignment_expression   :type_keyword IDENTIFIER ASSIGN INT
                         |type_keyword IDENTIFIER ASSIGN FALSE
                         |type_keyword IDENTIFIER ASSIGN arithmetic_expression
                         |type_keyword IDENTIFIER ASSIGN function_call 
+                        | IDENTIFIER ASSIGN INT
+                        | IDENTIFIER ASSIGN FLOAT
+                        | IDENTIFIER ASSIGN TRUE
+                        | IDENTIFIER ASSIGN FALSE
+                        | IDENTIFIER ASSIGN arithmetic_expression
+                        | IDENTIFIER ASSIGN function_call
                         ;
                         
                         
