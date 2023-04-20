@@ -29,7 +29,7 @@ type_keyword    : TYPE_INT
                 ;
 if_statement    : IF LPAREN expression RPAREN LBRACE statement RBRACE 
                 | IF LPAREN expression RPAREN LBRACE statement RBRACE ELSE  LBRACE statement RBRACE
-                | IF LPAREN expression RPAREN LBRACE statement RBRACE ELSE_IF LPAREN expression RPAREN LBRACE statement RBRACE  ELSE  LBRACE statement RBRACE SEMICOLON
+                | IF LPAREN expression RPAREN LBRACE statement RBRACE ELSE_IF LPAREN expression RPAREN LBRACE statement RBRACE  ELSE  LBRACE statement RBRACE 
                 ;
 while_statement : WHILE LPAREN expression RPAREN LBRACE statement RBRACE;
 
