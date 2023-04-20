@@ -43,8 +43,10 @@ print_statement : PRINT LPAREN STRING RPAREN SEMICOLON ;
 expression  : assignment_expression 
             | logical_expression
             | unary_expression
+            | arithmetic_expression
             ;
             
+arithmetic_expression   : ( IDENTIFIER| INT | FLOAT) (
 assignment_expression   :type_keyword IDENTIFIER ASSIGN INT
                         |type_keyword IDENTIFIER ASSIGN FLOAT
                         |type_keyword IDENTIFIER ASSIGN TRUE
