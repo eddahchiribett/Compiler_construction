@@ -1,0 +1,125 @@
+Created by PLY version 3.11 (http://www.dabeaz.com/ply)
+
+Unused terminals:
+
+    ASSIGN
+    COLON
+    COMMA
+    DIVIDE
+    ELSE_IF
+    EQUALS
+    FALSE
+    FLOAT
+    GREATER_THAN
+    GREATER_THAN_OR_EQUAL
+    IDENTIFIER
+    INPUT
+    INTEGER
+    LBRACKET
+    LESS_THAN
+    LESS_THAN_OR_EQUAL
+    LOGICAL_AND
+    LOGICAL_NOT
+    LOGICAL_OR
+    MINUS
+    MODULUS
+    MULTIPLY
+    NOT_EQUALS
+    PLUS
+    PRINT
+    RBRACKET
+    STRING
+    TRUE
+    VOID
+
+Grammar
+
+Rule 0     S' -> program
+Rule 1     program -> function main_function
+Rule 2     program -> main_function
+Rule 3     main_function -> TYPE_INT MAIN LPAREN RPAREN LBRACE statement_list RETURN SEMICOLON RBRACE
+Rule 4     statement_list -> statement
+Rule 5     statement_list -> statement statement_list
+Rule 6     statement -> expression_statement
+Rule 7     statement -> control_statement
+Rule 8     statement -> return_statement
+Rule 9     statement -> print_statement
+Rule 10    expression_statement -> expression SEMICOLON
+Rule 11    control_statement -> if_statement
+Rule 12    control_statement -> while_statement
+Rule 13    control_statement -> do_while_statement
+Rule 14    control_keyword -> WHILE
+Rule 15    control_keyword -> IF
+Rule 16    control_keyword -> ELSE
+Rule 17    control_keyword -> DO
+Rule 18    control_keyword -> FOR
+Rule 19    type_keyword -> TYPE_INT
+Rule 20    type_keyword -> TYPE_BOOL
+Rule 21    type_keyword -> TYPE_FLOAT
+
+Terminals, with rules where they appear
+
+ASSIGN               : 
+COLON                : 
+COMMA                : 
+DIVIDE               : 
+DO                   : 17
+ELSE                 : 16
+ELSE_IF              : 
+EQUALS               : 
+FALSE                : 
+FLOAT                : 
+FOR                  : 18
+GREATER_THAN         : 
+GREATER_THAN_OR_EQUAL : 
+IDENTIFIER           : 
+IF                   : 15
+INPUT                : 
+INTEGER              : 
+LBRACE               : 3
+LBRACKET             : 
+LESS_THAN            : 
+LESS_THAN_OR_EQUAL   : 
+LOGICAL_AND          : 
+LOGICAL_NOT          : 
+LOGICAL_OR           : 
+LPAREN               : 3
+MAIN                 : 3
+MINUS                : 
+MODULUS              : 
+MULTIPLY             : 
+NOT_EQUALS           : 
+PLUS                 : 
+PRINT                : 
+RBRACE               : 3
+RBRACKET             : 
+RETURN               : 3
+RPAREN               : 3
+SEMICOLON            : 3 10
+STRING               : 
+TRUE                 : 
+TYPE_BOOL            : 20
+TYPE_FLOAT           : 21
+TYPE_INT             : 3 19
+VOID                 : 
+WHILE                : 14
+error                : 
+
+Nonterminals, with rules where they appear
+
+control_keyword      : 
+control_statement    : 7
+do_while_statement   : 13
+expression           : 10
+expression_statement : 6
+function             : 1
+if_statement         : 11
+main_function        : 1 2
+print_statement      : 9
+program              : 0
+return_statement     : 8
+statement            : 4 5
+statement_list       : 3 5
+type_keyword         : 
+while_statement      : 12
+

@@ -1,0 +1,110 @@
+program ::= function main_function
+          | main_function
+
+main_function ::= TYPE_INT MAIN LPAREN RPAREN LBRACE statement_list RETURN SEMICOLON RBRACE
+
+statement_list ::= statement
+                 | statement statement_list
+
+statement ::= expression_statement
+            | control_statement
+            | return_statement
+            | print_statement
+
+expression_statement ::=  expression SEMICOLON
+
+control_statement ::= if_statement
+                    | while_statement
+                    | do_while_statement
+
+control_keyword ::= WHILE
+                  | IF
+                  | ELSE
+                  | DO
+                  | FOR
+
+type_keyword ::= TYPE_INT
+                |TYPE_BOOL
+                | TYPE_FLOAT
+
+if_statement ::= IF LPAREN expression RPAREN LBRACE statement RBRACE
+               | IF LPAREN expression RPAREN LBRACE statement RBRACE ELSE  LBRACE statement RBRACE
+               | IF LPAREN expression RPAREN LBRACE statement RBRACE ELSE_IF LPAREN expression RPAREN LBRACE statement RBRACE  ELSE  LBRACE statement RBRACE
+
+while_statement ::= WHILE LPAREN expression RPAREN LBRACE statement RBRACE
+
+do_while_statement ::= DO LBRACE statement RBRACE WHILE LPAREN expression RPAREN
+
+return_statement ::= RETURN LPAREN expression RPAREN SEMICOLON
+
+print_statement ::= PRINT LPAREN STRING RPAREN SEMICOLON
+
+expression ::= assignment_expression
+             | logical_expression
+             | unary_expression
+             | arithmetic_expression
+             | relational_expression
+             | equality_expression
+
+arithmetic_expression ::= (IDENTIFIER| INTEGER | FLOAT) (PLUS | MINUS | MULTIPLY| DIVIDE) ( IDENTIFIER| INTEGER | FLOAT)
+
+assignment_expression ::= type_keyword IDENTIFIER ASSIGN INTEGER
+                         |type_keyword IDENTIFIER ASSIGN FLOAT
+                         |type_keyword IDENTIFIER ASSIGN TRUE
+                         |type_keyword IDENTIFIER ASSIGN FALSE
+                         |type_keyword IDENTIFIER ASSIGN arithmetic_expression
+                         |type_keyword IDENTIFIER ASSIGN function_call
+                         |IDENTIFIER ASSIGN INTEGER
+                         |IDENTIFIER ASSIGN FLOAT
+                         |IDENTIFIER ASSIGN TRUE
+                         |IDENTIFIER ASSIGN FALSE
+                         |IDENTIFIER ASSIGN arithmetic_expression
+                         |IDENTIFIER ASSIGN function_call
+
+logical_expression ::= logical_or_expression
+                      |logical_and_expression
+                      |logical_not_expression
+
+logical_or_expression ::= (IDENTIFIER| relational_expression | equality_expression ) LOGICAL_OR (IDENTIFIER | relational_expression | equality_expression )
+
+logical_and_expression ::= (IDENTIFIER| relational_expression | equality_expression ) LOGICAL_AND (IDENTIFIER | relational_expression | equality_expression )
+
+logical_not_expression ::= LOGICAL_NOT logical_and_expression
+                         | LOGICAL_NOT logical_or_expression
+                         | LOGICAL_NOT (IDENTIFIER | equality_expression | relational_expression )
+
+equality_expression ::= IDENTIFIER (EQUALS | NOT_EQUALS ) (IDENTIFIER| INTEGER | FLOAT| TRUE | FALSE)
+
+relational_expression ::= (IDENTIFIER| INTEGER | FLOAT) (LESS_THAN | GREATER_THAN | LESS_THAN_OR_EQUAL | GREATER_THAN_OR_EQUAL) ( IDENTIFIER| INTEGER | FLOAT)
+
+unary_expression ::= primary_expression
+                    | MINUS primary_expression
+                    | PLUS primary_expression
+
+primary_expression ::= IDENTIFIER
+                     | number
+                     | LPAREN expression RPAREN
+                     | function_call
+
+function ::= type_keyword IDENTIFIER LPAREN argument_list RPAREN LBRACE statement_list RBRACE
+
+function_call ::= IDENTIFIER LPAREN argument_list RPAREN
+
+argument_list ::= type_keyword expression (COMMA type_keyword expression)*
+
+number ::= INTEGER
+         | FLOAT
+
+
+NB: The words in capital letters are for the terminals/tokens in our grammar
+
+
+
+
+
+
+
+
+
+
+
