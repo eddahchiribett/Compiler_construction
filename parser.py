@@ -24,7 +24,6 @@ precedence = (
     ('left', 'PLUS', 'MINUS'),
     ('left', 'MULTIPLY', 'DIVIDE', 'MODULUS'),
     ('right', 'LOGICAL_NOT'),
-    ('nonassoc', 'EQUALS'),
 )
 
 
@@ -44,7 +43,7 @@ def p_main_function(p):
     '''
     main_function : TYPE_INT MAIN LPAREN RPAREN LBRACE statement_list RBRACE
     '''
-    p[0] = ['main_function', p[6]]
+    p[0] = ('main_function', p[6])
 
 
 def p_statement_list(p):
@@ -53,9 +52,9 @@ def p_statement_list(p):
                    | statement statement_list
     '''
     if len(p) == 2:
-        p[0] = ('statement', p[1])
-    elif len(p) == 3:
-        p[0] = (p[1], p[2])
+        p[0] = [p[1]]
+    else:
+        p[0] = [p[1]] + p[2]
 
 
 def p_statement(p):
@@ -84,16 +83,6 @@ def p_control_statement(p):
     p[0] = ('control_statement', p[1])
 
 
-# def p_control_keyword(p):
-#     '''
-#     control_keyword : WHILE
-#                     | IF
-#                     | ELSE
-#                     | DO
-#     '''
-#     p[0] = ('control_keyword', p[1])
-
-
 def p_type_keyword(p):
     '''
     type_keyword : TYPE_INT
@@ -112,9 +101,9 @@ def p_if_statement(p):
     if len(p) == 8:
         p[0] = ('if', p[3], p[6])
     elif len(p) == 12:
-        p[0] = ('if_else', p[3], p[6], p[10])
+        p[0] = (('if', p[3], p[6]), ('else', p[10]))
     elif len(p) == 19:
-        p[0] = ('if_elseif_else', p[3], p[6], p[10], p[13], p[17])
+        p[0] = (('if', p[3], p[6]), ('elif', p[10], p[13]), ('else', p[17]))
 
 
 def p_while_statement(p):
@@ -176,16 +165,7 @@ def p_arithmetic_expression(p):
                             | INTEGER PLUS IDENTIFIER
                             | INTEGER MODULUS IDENTIFIER
                             | INTEGER MODULUS INTEGER
-
     '''
-    # if p[2] == '+':
-    #     p[0] = p[1] + p[3]
-    # elif p[2] == '-':
-    #     p[0] = p[1] - p[3]
-    # elif p[2] == '*':
-    #     p[0] == p[1] * p[3]
-    # elif p[2] == '/':
-    #     p[0] = p[1] / p[3]
     p[0] = ('arithmetic_exp', p[2], p[1], p[3])
 
 
@@ -203,12 +183,7 @@ def p_assignment_expression(p):
                           | IDENTIFIER ASSIGN FALSE
                           | IDENTIFIER ASSIGN arithmetic_expression
                           | IDENTIFIER ASSIGN function_call
-
     '''
-    # if p[3] == '=':
-    #     p[0] = p[1], p[2], = p[4]
-    # else:
-    #     p[0] = p[1] = p[3]
     if len(p) == 5:
         p[0] = ('assignment_exp', p[3], p[2], p[4])
     elif len(p) == 4:
@@ -236,7 +211,6 @@ def p_logical_or_expression(p):
                             | equality_expression LOGICAL_OR relational_expression
                             | equality_expression LOGICAL_OR equality_expression
     '''
-    # p[0] = p[1] or p[3]
     p[0] = ('logical_or', p[2], p[1], p[3])
 
 
@@ -251,9 +225,7 @@ def p_logical_and_expression(p):
                            | equality_expression LOGICAL_AND IDENTIFIER
                            | equality_expression LOGICAL_AND relational_expression
                            | equality_expression LOGICAL_AND equality_expression
-
     '''
-    # p[0] = p[1] and p[3]
     p[0] = ('logical_and', p[2], p[1], p[3])
 
 
@@ -264,8 +236,6 @@ def p_logical_not_expression(p):
                                 | LOGICAL_NOT equality_expression
                                 | LOGICAL_NOT relational_expression
     '''
-
-    # p[0] = not (p[2])
     p[0] = ('logical_not', p[1], p[2])
 
 
@@ -281,10 +251,6 @@ def p_equality_expression(p):
                            | IDENTIFIER NOT_EQUALS TRUE
                            | IDENTIFIER NOT_EQUALS FALSE
     '''
-    # if p[2] == '==':
-    #     p[0] = p[1] == p[3]
-    # elif p[2] == '!=':
-    #     p[0] = p[1] != p[3]
     p[0] = ('equality_exp', p[2], p[1], p[3])
 
 
@@ -326,15 +292,6 @@ def p_relational_expression(p):
                                 | FLOAT GREATER_THAN_OR_EQUAL INTEGER
                                 | FLOAT GREATER_THAN_OR_EQUAL FLOAT
     '''
-    # if p[2] == '<':
-    #     p[0] = p[1] < p[3]
-    # elif p[2] == '>':
-    #     # p[0] = p[1] > p[3]
-    #     p[0] = ('relational', p[2], p[1], p[3])
-    # elif p[2] == '<=':
-    #     p[0] = p[1] <= p[3]
-    # elif p[2] == '>+':
-    #     p[0] = p[1] > + p[3]
     p[0] = ('relational_exp', p[2], p[1], p[3])
 
 
@@ -345,13 +302,6 @@ def p_unary_expression(p):
                           | IDENTIFIER
                           | LPAREN expression RPAREN
     '''
-
-    # if p[1] == '-':
-    #     p[0] = - p[2]
-    # elif p[1] == '+':
-    #     p[0] = + p[2]
-    # else:
-    #     p[0] = p[1]
     if len(p) == 4:
         p[0] = ('unary_exp', p[1], p[2], p[3])
     elif len(p) == 3:
@@ -365,7 +315,6 @@ def p_function(p):
     function : type_keyword IDENTIFIER LPAREN argument_list RPAREN LBRACE statement_list RBRACE
     function : VOID IDENTIFIER LPAREN argument_list RPAREN LBRACE statement_list RBRACE
     '''
-    # p[0] = p[1], p[2], (p[4]), {p[7]}
     p[0] = ('function', p[1], p[2], p[4], p[7])
 
 
@@ -373,16 +322,6 @@ def p_function_call(p):
     '''function_call : IDENTIFIER LPAREN argument_list RPAREN '''
     p[0] = ('function_call', p[1], p[3])
 
-
-# def p_argument_list(p):
-#     # '''argument_list : type_keyword expression COMMA type_keyword expression
-#     #                  | type_keyword expression
-#     # '''
-#     '''argument_list : type_keyword IDENTIFIER
-#                      | type_keyword IDENTIFIER COMMA argument_list
-#     '''
-#     # p[0] = p[1], p[2], p[3], p[4]
-#     p[0] = ('argument_list', p[1], p[2])
 
 def p_argument_list(p):
     '''
@@ -398,14 +337,18 @@ def p_argument_list(p):
 def p_argument(p):
     '''
     argument : type_keyword IDENTIFIER
+             | IDENTIFIER
     '''
-    p[0] = ('argument', p[1])
+    if len(p) == 3:
+        p[0] = ('argument', p[1], p[2])
+    elif len(p) == 2:
+        p[0] = ('argument', p[1])
 
 
 def p_number(p):
-    '''number   : INTEGER
-                | FLOAT'''
-    # p[0] = p[1]
+    '''number : INTEGER
+              | FLOAT
+    '''
     p[0] = ('number', p[1])
 
 

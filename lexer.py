@@ -109,8 +109,6 @@ def t_IDENTIFIER(t):
         t.type = 'FOR'
     elif t.value == 'print':
         t.type = 'PRINT'
-    elif t.value == 'input':
-        t.type = 'INPUT'
     elif t.value == 'if':
         t.type = 'IF'
     elif t.value == 'elif':

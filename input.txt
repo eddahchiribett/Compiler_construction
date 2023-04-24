@@ -12,6 +12,6 @@ int fallspeed(int height, bool hasParachute ){
 int main(){
     int height = 10;
     bool hasParachute = false;
-    fallspeed(int height, bool hasParachute);
+    fallspeed(height, hasParachute);
     return (0);
 }
