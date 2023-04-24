@@ -3,15 +3,12 @@ int fallspeed(int height, bool hasParachute ){
     float force = height * gravity_accel;
     if(force > 98 && hasParachute == true){
         print("You are safe.");
-    }elif (force < 98 && hasParachute == false){
+    }elif(force > 98 && hasParachute == false){
         print("Ouch! You are injured");
     }else {
         print("You didn't need a Parachute!");
     }
 }
 int main(){
-    int height = 10;
-    bool hasParachute = false;
-    fallspeed(int height, bool hasParachute);
-    return (0);
+    print("Hello World");
 }

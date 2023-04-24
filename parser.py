@@ -1,9 +1,12 @@
+import logging
 import ply.yacc as yacc
 import lexer
+logging.getLogger('ply').setLevel(logging.WARNING)
+
 
 tokens = lexer.tokens
 token_string = lexer.token_string
-print('\nOutput string from the lexer is: ')
+print('\nOutput string from the lexer is: \n')
 print(token_string)
 print('\n')
 
@@ -32,16 +35,16 @@ def p_program(p):
             | main_function
     '''
     if len(p) == 3:
-        p[0] = ('program', p[1], p[2])
+        p[0] = ['program', p[1], p[2]]
     elif len(p) == 2:
-        p[0] = ('program', p[1])
+        p[0] = ['program', p[1]]
 
 
 def p_main_function(p):
     '''
-    main_function : TYPE_INT MAIN LPAREN RPAREN LBRACE statement_list RETURN SEMICOLON RBRACE
+    main_function : TYPE_INT MAIN LPAREN RPAREN LBRACE statement_list RBRACE
     '''
-    p[0] = ('main_function', p[6])
+    p[0] = ['main_function', p[6]]
 
 
 def p_statement_list(p):
@@ -49,10 +52,10 @@ def p_statement_list(p):
     statement_list : statement
                    | statement statement_list
     '''
-    if len(p) == 3:
-        p[0] = ('statement_list', p[1], p[2])
-    elif len(p) == 2:
+    if len(p) == 2:
         p[0] = ('statement', p[1])
+    elif len(p) == 3:
+        p[0] = (p[1], p[2])
 
 
 def p_statement(p):
@@ -81,15 +84,14 @@ def p_control_statement(p):
     p[0] = ('control_statement', p[1])
 
 
-def p_control_keyword(p):
-    '''
-    control_keyword : WHILE
-                    | IF
-                    | ELSE
-                    | DO
-                    | FOR
-    '''
-    p[0] = ('control_keyword', p[1])
+# def p_control_keyword(p):
+#     '''
+#     control_keyword : WHILE
+#                     | IF
+#                     | ELSE
+#                     | DO
+#     '''
+#     p[0] = ('control_keyword', p[1])
 
 
 def p_type_keyword(p):
@@ -101,11 +103,11 @@ def p_type_keyword(p):
     p[0] = ('type_keyword', p[1])
 
 
-def if_statement(p):
+def p_if_statement(p):
     '''
     if_statement : IF LPAREN expression RPAREN LBRACE statement RBRACE
                  | IF LPAREN expression RPAREN LBRACE statement RBRACE ELSE LBRACE statement RBRACE
-                 | IF LPAREN expression RPAREN LBRACE statement RBRACE ELSE_IF LPAREN expression RPAREN LBRACE statement RBRACE ELSE LBRACE statement RBRACE
+                 | IF LPAREN expression RPAREN LBRACE statement RBRACE ELIF LPAREN expression RPAREN LBRACE statement RBRACE ELSE LBRACE statement RBRACE
     '''
     if len(p) == 8:
         p[0] = ('if', p[3], p[6])
@@ -115,11 +117,296 @@ def if_statement(p):
         p[0] = ('if_elseif_else', p[3], p[6], p[10], p[13], p[17])
 
 
-def while_statement(p):
+def p_while_statement(p):
     '''
     while_statement : WHILE LPAREN expression RPAREN LBRACE statement RBRACE
     '''
     p[0] = ('while_statement', p[3], p[6])
+
+
+def p_do_while_statement(p):
+    '''do_while_statement : DO LBRACE statement RBRACE WHILE LPAREN expression RPAREN'''
+    p[0] = ('do_while_statement', p[3], p[6])
+
+
+def p_return_statement(p):
+    '''return_statement : RETURN LPAREN INTEGER RPAREN SEMICOLON
+                        | RETURN LPAREN FLOAT RPAREN SEMICOLON
+                        | RETURN LPAREN TRUE RPAREN SEMICOLON
+                        | RETURN LPAREN FALSE RPAREN SEMICOLON
+    '''
+    p[0] = ('return_statement', p[3])
+
+
+def p_print_statement(p):
+    '''
+    print_statement : PRINT LPAREN STRING RPAREN SEMICOLON
+    '''
+    p[0] = ('print', p[3])
+
+
+def p_expression(p):
+    '''
+    expression  : assignment_expression
+                | logical_expression
+                | unary_expression
+                | arithmetic_expression
+                | relational_expression
+                | equality_expression
+    '''
+    p[0] = ('exp', p[1])
+
+
+def p_arithmetic_expression(p):
+    '''
+    arithmetic_expression   : IDENTIFIER PLUS IDENTIFIER
+                            | IDENTIFIER PLUS INTEGER
+                            | IDENTIFIER MODULUS IDENTIFIER
+                            | IDENTIFIER MINUS IDENTIFIER
+                            | IDENTIFIER MINUS INTEGER
+                            | IDENTIFIER MINUS FLOAT
+                            | IDENTIFIER MODULUS INTEGER
+                            | IDENTIFIER MULTIPLY IDENTIFIER
+                            | IDENTIFIER MULTIPLY INTEGER
+                            | IDENTIFIER MULTIPLY FLOAT
+                            | IDENTIFIER DIVIDE IDENTIFIER
+                            | IDENTIFIER DIVIDE INTEGER
+                            | IDENTIFIER DIVIDE FLOAT
+                            | INTEGER PLUS INTEGER
+                            | INTEGER PLUS IDENTIFIER
+                            | INTEGER MODULUS IDENTIFIER
+                            | INTEGER MODULUS INTEGER
+
+    '''
+    # if p[2] == '+':
+    #     p[0] = p[1] + p[3]
+    # elif p[2] == '-':
+    #     p[0] = p[1] - p[3]
+    # elif p[2] == '*':
+    #     p[0] == p[1] * p[3]
+    # elif p[2] == '/':
+    #     p[0] = p[1] / p[3]
+    p[0] = ('arithmetic_exp', p[2], p[1], p[3])
+
+
+def p_assignment_expression(p):
+    '''
+    assignment_expression : type_keyword IDENTIFIER ASSIGN INTEGER
+                          | type_keyword IDENTIFIER ASSIGN FLOAT
+                          | type_keyword IDENTIFIER ASSIGN TRUE
+                          | type_keyword IDENTIFIER ASSIGN FALSE
+                          | type_keyword IDENTIFIER ASSIGN arithmetic_expression
+                          | type_keyword IDENTIFIER ASSIGN function_call
+                          | IDENTIFIER ASSIGN INTEGER
+                          | IDENTIFIER ASSIGN FLOAT
+                          | IDENTIFIER ASSIGN TRUE
+                          | IDENTIFIER ASSIGN FALSE
+                          | IDENTIFIER ASSIGN arithmetic_expression
+                          | IDENTIFIER ASSIGN function_call
+
+    '''
+    # if p[3] == '=':
+    #     p[0] = p[1], p[2], = p[4]
+    # else:
+    #     p[0] = p[1] = p[3]
+    if len(p) == 5:
+        p[0] = ('assignment_exp', p[3], p[2], p[4])
+    elif len(p) == 4:
+        p[0] = ('assignment_exp', p[2], p[1], p[3])
+
+
+def p_logical_expression(p):
+    '''
+    logical_expression : logical_or_expression
+                       | logical_and_expression
+                       | logical_not_expression
+    '''
+    p[0] = ('logical_exp', p[1])
+
+
+def p_logical_or_expression(p):
+    '''
+    logical_or_expression   : IDENTIFIER LOGICAL_OR IDENTIFIER
+                            | IDENTIFIER LOGICAL_OR relational_expression
+                            | IDENTIFIER LOGICAL_OR equality_expression
+                            | relational_expression LOGICAL_OR IDENTIFIER
+                            | relational_expression LOGICAL_OR relational_expression
+                            | relational_expression LOGICAL_OR equality_expression
+                            | equality_expression LOGICAL_OR IDENTIFIER
+                            | equality_expression LOGICAL_OR relational_expression
+                            | equality_expression LOGICAL_OR equality_expression
+    '''
+    # p[0] = p[1] or p[3]
+    p[0] = ('logical_or', p[2], p[1], p[3])
+
+
+def p_logical_and_expression(p):
+    '''
+    logical_and_expression : IDENTIFIER LOGICAL_AND IDENTIFIER
+                           | IDENTIFIER LOGICAL_AND relational_expression
+                           | IDENTIFIER LOGICAL_AND equality_expression
+                           | relational_expression LOGICAL_AND IDENTIFIER
+                           | relational_expression LOGICAL_AND relational_expression
+                           | relational_expression LOGICAL_AND equality_expression
+                           | equality_expression LOGICAL_AND IDENTIFIER
+                           | equality_expression LOGICAL_AND relational_expression
+                           | equality_expression LOGICAL_AND equality_expression
+
+    '''
+    # p[0] = p[1] and p[3]
+    p[0] = ('logical_and', p[2], p[1], p[3])
+
+
+def p_logical_not_expression(p):
+    '''logical_not_expression   : LOGICAL_NOT logical_and_expression
+                                | LOGICAL_NOT logical_or_expression
+                                | LOGICAL_NOT IDENTIFIER
+                                | LOGICAL_NOT equality_expression
+                                | LOGICAL_NOT relational_expression
+    '''
+
+    # p[0] = not (p[2])
+    p[0] = ('logical_not', p[1], p[2])
+
+
+def p_equality_expression(p):
+    '''equality_expression : IDENTIFIER EQUALS IDENTIFIER
+                           | IDENTIFIER EQUALS INTEGER
+                           | IDENTIFIER EQUALS FLOAT
+                           | IDENTIFIER EQUALS TRUE
+                           | IDENTIFIER EQUALS FALSE
+                           | IDENTIFIER NOT_EQUALS IDENTIFIER
+                           | IDENTIFIER NOT_EQUALS INTEGER
+                           | IDENTIFIER NOT_EQUALS FLOAT
+                           | IDENTIFIER NOT_EQUALS TRUE
+                           | IDENTIFIER NOT_EQUALS FALSE
+    '''
+    # if p[2] == '==':
+    #     p[0] = p[1] == p[3]
+    # elif p[2] == '!=':
+    #     p[0] = p[1] != p[3]
+    p[0] = ('equality_exp', p[2], p[1], p[3])
+
+
+def p_relational_expression(p):
+    ''' relational_expression   : IDENTIFIER GREATER_THAN IDENTIFIER
+                                | IDENTIFIER GREATER_THAN INTEGER
+                                | IDENTIFIER GREATER_THAN FLOAT
+                                | IDENTIFIER LESS_THAN IDENTIFIER
+                                | IDENTIFIER LESS_THAN INTEGER
+                                | IDENTIFIER LESS_THAN FLOAT
+                                | IDENTIFIER LESS_THAN_OR_EQUAL IDENTIFIER
+                                | IDENTIFIER LESS_THAN_OR_EQUAL INTEGER
+                                | IDENTIFIER LESS_THAN_OR_EQUAL FLOAT
+                                | IDENTIFIER GREATER_THAN_OR_EQUAL IDENTIFIER
+                                | IDENTIFIER GREATER_THAN_OR_EQUAL INTEGER
+                                | IDENTIFIER GREATER_THAN_OR_EQUAL FLOAT
+                                | INTEGER GREATER_THAN IDENTIFIER
+                                | INTEGER GREATER_THAN INTEGER
+                                | INTEGER GREATER_THAN FLOAT
+                                | INTEGER LESS_THAN IDENTIFIER
+                                | INTEGER LESS_THAN INTEGER
+                                | INTEGER LESS_THAN FLOAT
+                                | INTEGER LESS_THAN_OR_EQUAL IDENTIFIER
+                                | INTEGER LESS_THAN_OR_EQUAL INTEGER
+                                | INTEGER LESS_THAN_OR_EQUAL FLOAT
+                                | INTEGER GREATER_THAN_OR_EQUAL IDENTIFIER
+                                | INTEGER GREATER_THAN_OR_EQUAL INTEGER
+                                | INTEGER GREATER_THAN_OR_EQUAL FLOAT
+                                | FLOAT GREATER_THAN IDENTIFIER
+                                | FLOAT GREATER_THAN INTEGER
+                                | FLOAT GREATER_THAN FLOAT
+                                | FLOAT LESS_THAN IDENTIFIER
+                                | FLOAT LESS_THAN INTEGER
+                                | FLOAT LESS_THAN FLOAT
+                                | FLOAT LESS_THAN_OR_EQUAL IDENTIFIER
+                                | FLOAT LESS_THAN_OR_EQUAL INTEGER
+                                | FLOAT LESS_THAN_OR_EQUAL FLOAT
+                                | FLOAT GREATER_THAN_OR_EQUAL IDENTIFIER
+                                | FLOAT GREATER_THAN_OR_EQUAL INTEGER
+                                | FLOAT GREATER_THAN_OR_EQUAL FLOAT
+    '''
+    # if p[2] == '<':
+    #     p[0] = p[1] < p[3]
+    # elif p[2] == '>':
+    #     # p[0] = p[1] > p[3]
+    #     p[0] = ('relational', p[2], p[1], p[3])
+    # elif p[2] == '<=':
+    #     p[0] = p[1] <= p[3]
+    # elif p[2] == '>+':
+    #     p[0] = p[1] > + p[3]
+    p[0] = ('relational_exp', p[2], p[1], p[3])
+
+
+def p_unary_expression(p):
+    '''unary_expression   : MINUS number
+                          | PLUS number
+                          | function_call
+                          | IDENTIFIER
+                          | LPAREN expression RPAREN
+    '''
+
+    # if p[1] == '-':
+    #     p[0] = - p[2]
+    # elif p[1] == '+':
+    #     p[0] = + p[2]
+    # else:
+    #     p[0] = p[1]
+    if len(p) == 4:
+        p[0] = ('unary_exp', p[1], p[2], p[3])
+    elif len(p) == 3:
+        p[0] = ('unary_exp', p[1], p[2])
+    else:
+        p[0] = ('unary_exp', p[1])
+
+
+def p_function(p):
+    '''
+    function : type_keyword IDENTIFIER LPAREN argument_list RPAREN LBRACE statement_list RBRACE
+    function : VOID IDENTIFIER LPAREN argument_list RPAREN LBRACE statement_list RBRACE
+    '''
+    # p[0] = p[1], p[2], (p[4]), {p[7]}
+    p[0] = ('function', p[1], p[2], p[4], p[7])
+
+
+def p_function_call(p):
+    '''function_call : IDENTIFIER LPAREN argument_list RPAREN '''
+    p[0] = ('function_call', p[1], p[3])
+
+
+# def p_argument_list(p):
+#     # '''argument_list : type_keyword expression COMMA type_keyword expression
+#     #                  | type_keyword expression
+#     # '''
+#     '''argument_list : type_keyword IDENTIFIER
+#                      | type_keyword IDENTIFIER COMMA argument_list
+#     '''
+#     # p[0] = p[1], p[2], p[3], p[4]
+#     p[0] = ('argument_list', p[1], p[2])
+
+def p_argument_list(p):
+    '''
+    argument_list : argument
+                  | argument COMMA argument_list
+    '''
+    if len(p) == 2:
+        p[0] = [p[1]]
+    else:
+        p[0] = [p[1]] + p[3]
+
+
+def p_argument(p):
+    '''
+    argument : type_keyword IDENTIFIER
+    '''
+    p[0] = ('argument', p[1])
+
+
+def p_number(p):
+    '''number   : INTEGER
+                | FLOAT'''
+    # p[0] = p[1]
+    p[0] = ('number', p[1])
 
 
 def p_error(p):
@@ -133,4 +420,5 @@ parser = yacc.yacc()
 
 # call the parse method to parse the token string
 ast = parser.parse(token_string)
+print('The parse tree for the input token string is: \n')
 print(ast)

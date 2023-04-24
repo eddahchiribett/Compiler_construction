@@ -23,24 +23,19 @@ tokens = [
     'LOGICAL_NOT',
     'LPAREN',
     'RPAREN',
-    'LBRACKET',
-    'RBRACKET',
     'LBRACE',
     'RBRACE',
     'COMMA',
     'SEMICOLON',
-    'COLON',
     'TYPE_INT',
     'TYPE_FLOAT',
     'TYPE_BOOL',
     'WHILE',
     'ELSE',
     'DO',
-    'FOR',
     'IF',
     'PRINT',
-    'INPUT',
-    'ELSE_IF',
+    'ELIF',
     'TRUE',
     'FALSE',
     'VOID',
@@ -66,13 +61,10 @@ t_LOGICAL_OR = r'\|\|'
 t_LOGICAL_NOT = r'!'
 t_LPAREN = r'\('
 t_RPAREN = r'\)'
-t_LBRACKET = r'\['
-t_RBRACKET = r'\]'
 t_LBRACE = r'{'
 t_RBRACE = r'}'
 t_COMMA = r','
 t_SEMICOLON = r';'
-t_COLON = r':'
 
 
 # Regular expression rules with action code
@@ -121,8 +113,8 @@ def t_IDENTIFIER(t):
         t.type = 'INPUT'
     elif t.value == 'if':
         t.type = 'IF'
-    elif t.value == 'else if':
-        t.type = 'ELSE_IF'
+    elif t.value == 'elif':
+        t.type = 'ELIF'
     elif t.value == 'else':
         t.type = 'ELSE'
     elif t.value == 'void':
@@ -140,10 +132,16 @@ def t_IDENTIFIER(t):
 t_ignore = ' \t\n\r\v'
 
 
+# Define a regular expression for a newline character
+def t_newline(t):
+    r'\n+'
+    t.lexer.lineno += len(t.value)
+
+
 # Error handling rule
 def t_error(t):
     # print("Illegal character found '%s'" % t.value[0])
-    print("Illegal character found '{}' ".format(t.value[0]))
+    print("Illegal character found '{} ' ".format(t.value[0]))
     t.lexer.skip(1)
 
 
@@ -165,7 +163,9 @@ token_list = []
 # read the lexemes and append them to a list
 for tok in lexer:
     # token_list.append(' {}, {} '.format(tok.type, tok.value))
+    print('Token: {} Value: {}'.format(tok.type, tok.value))
     token_list.append('{} '.format(tok.value))
+
 
 # convert the list of lexemes into a string of lexemes that match the tokens in the grammar
 token_string = ' '.join(token_list)

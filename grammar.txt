@@ -1,7 +1,7 @@
 program ::= function main_function
           | main_function
 
-main_function ::= TYPE_INT MAIN LPAREN RPAREN LBRACE statement_list RETURN SEMICOLON RBRACE
+main_function ::= TYPE_INT MAIN LPAREN RPAREN LBRACE statement_list RBRACE
 
 statement_list ::= statement
                  | statement statement_list
@@ -28,7 +28,7 @@ type_keyword ::= TYPE_INT
                 | TYPE_FLOAT
 
 if_statement ::= IF LPAREN expression RPAREN LBRACE statement RBRACE
-               | IF LPAREN expression RPAREN LBRACE statement RBRACE ELSE  LBRACE statement RBRACE
+               | IF LPAREN expression RPAREN LBRACE statement RBRACE ELSE LBRACE statement RBRACE
                | IF LPAREN expression RPAREN LBRACE statement RBRACE ELSE_IF LPAREN expression RPAREN LBRACE statement RBRACE  ELSE  LBRACE statement RBRACE
 
 while_statement ::= WHILE LPAREN expression RPAREN LBRACE statement RBRACE
