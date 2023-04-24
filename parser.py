@@ -114,7 +114,8 @@ def p_while_statement(p):
 
 
 def p_do_while_statement(p):
-    '''do_while_statement : DO LBRACE statement RBRACE WHILE LPAREN expression RPAREN'''
+    '''do_while_statement : DO LBRACE statement RBRACE WHILE LPAREN expression RPAREN
+    '''
     p[0] = ('do_while_statement', p[3], p[6])
 
 
@@ -313,13 +314,14 @@ def p_unary_expression(p):
 def p_function(p):
     '''
     function : type_keyword IDENTIFIER LPAREN argument_list RPAREN LBRACE statement_list RBRACE
-    function : VOID IDENTIFIER LPAREN argument_list RPAREN LBRACE statement_list RBRACE
+             | VOID IDENTIFIER LPAREN argument_list RPAREN LBRACE statement_list RBRACE
     '''
     p[0] = ('function', p[1], p[2], p[4], p[7])
 
 
 def p_function_call(p):
-    '''function_call : IDENTIFIER LPAREN argument_list RPAREN '''
+    '''function_call : IDENTIFIER LPAREN argument_list RPAREN
+    '''
     p[0] = ('function_call', p[1], p[3])
 
 
