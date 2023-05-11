@@ -1,3 +1,9 @@
 int main(){
-    int 222kk = 10;
+    int x = 8;
+    if(x < 8){
+       x =  x + 2;
+    }
+    else{
+        x = x - 2;
+    }
 }

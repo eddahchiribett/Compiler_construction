@@ -145,7 +145,7 @@ def t_error(t):
 lexer = lex.lex()
 
 # Open the input text file
-with open('input3.txt', 'r') as file:
+with open('input10.txt', 'r') as file:
     input_text = file.read()
     print(input_text)
 

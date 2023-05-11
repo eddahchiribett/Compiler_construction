@@ -153,7 +153,7 @@ def p_if_statement(p):
         t2 = new_temp()
         L1 = new_label()
         L2 = new_label()
-        intermediate_code.append(t1 + ' = ' + p[3][1])
+        intermediate_code.append(t1 + ' = ' + str(p[3][1]))
         intermediate_code.append(t2 + ' = ' + '!t1')
         intermediate_code.append('if ' + t2 + ' goto ' + L1)
         intermediate_code.append(p[6])
@@ -214,7 +214,7 @@ def p_while_statement(p):
     L1 = new_label()  # Start of the loop
     L2 = new_label()  # End of the loop
     intermediate_code.append(L1 + ':')
-    intermediate_code.append(t1 + ' = ' + p[3][1])  # Evaluate the condition
+    intermediate_code.append(t1 + ' = ' + str(p[3][1]))  # Evaluate the condition
     intermediate_code.append(t2 + ' = ' + '!' + t1)  # Negate the condition
     intermediate_code.append('if ' + t2 + ' goto ' + L2)  # If condition is false, jump to the end of the loop
     intermediate_code.append(p[6])  # Execute the loop body
@@ -233,7 +233,7 @@ def p_do_while_statement(p):
 
     intermediate_code.append(L1 + ':')
     intermediate_code.append(p[3])
-    intermediate_code.append(t1 + ' = ' + p[7][1])
+    intermediate_code.append(t1 + ' = ' + str(p[7][1]))
     intermediate_code.append('if ' + t1 + ' goto ' + L1)
     intermediate_code.append(L2 + ':')
 
@@ -302,7 +302,7 @@ def p_arithmetic_expression(p):
         intermediate_code.append(t1 + ' = ' + str(p[1]) + p[2] + str(p[3]))
 
     else:
-        intermediate_code.append(t1 + ' = ' + p[1] + p[2] + p[3])
+        intermediate_code.append(t1 + ' = ' + str(p[1]) + str(p[2]) + str(p[3]))
 
 
 def p_assignment_expression(p):
@@ -325,7 +325,7 @@ def p_assignment_expression(p):
         intermediate_code.append(p[2] + ' = ' + str(p[4]))
     elif len(p) == 4:
         p[0] = ('assignment_exp', p[2], p[1], p[3])
-        intermediate_code.append(p[1] + ' = ' + p[4])
+        intermediate_code.append(p[1] + ' = ' + str(p[3]))
 
 
 def p_logical_expression(p):
@@ -440,15 +440,7 @@ def p_relational_expression(p):
                                 | FLOAT GREATER_THAN_OR_EQUAL INTEGER
                                 | FLOAT GREATER_THAN_OR_EQUAL FLOAT
     '''
-    p[0] = ('relational_exp', p[1], p[2], p[3])
-    # if p[2] == '<':
-    #     intermediate_code.append(p[1] + ' LT ' + p[3])
-    # elif p[2] == '<=':
-    #     intermediate_code.append(p[1] + ' LTOE' + p[3])
-    # elif p[2] == '>':
-    #     intermediate_code.append(p[1] + ' GT ' + p[3])
-    # elif p[2] == '>=':
-    #     intermediate_code.append(p[1] + 'GTOE' + p[3])
+    p[0] = (p[1], p[2], p[3])
 
 
 def p_unary_expression(p):
