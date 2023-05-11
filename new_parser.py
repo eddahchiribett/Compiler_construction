@@ -245,6 +245,8 @@ def p_return_statement(p):
                         | RETURN LPAREN FALSE RPAREN SEMICOLON
     '''
     p[0] = ('return_statement', p[3])
+    t1 = new_temp()
+    intermediate_code.append(t1 + ' = ' + str(p[0]))
 
 
 def p_print_statement(p):
@@ -252,6 +254,8 @@ def p_print_statement(p):
     print_statement : PRINT LPAREN STRING RPAREN SEMICOLON
     '''
     p[0] = ('print', p[3])
+    t1 = new_temp()
+    intermediate_code.append(t1 + ' = ' + str(p[0]))
 
 
 def p_expression(p):
