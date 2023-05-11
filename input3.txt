@@ -1,14 +1,11 @@
 int main(){
-    int height = 10;
-    bool hasParachute = false;
-    float gravity_accel= 9.8;
-    float force = height * gravity_accel;
-    if(force > 98 && hasParachute == true){
-        print("You are safe.");
-    }elif(force > 98 && hasParachute == false){
-        print("Ouch! You are injured");
-    }else {
-        print("You didn't need a Parachute!");
-    }
+   if(6 < 7){
+    print("Hello");
+   }
+   elif(6 > 7){
+    print("Hi");
+   }
+   else{
+   print("Bye");
+   }
 }
-

@@ -13,6 +13,7 @@ print('\n')
 temp_count = 1
 label_count = 1
 intermediate_code = []
+intermediate_code.append("PROGRAM START:")
 
 
 # generate a temporary variable
@@ -126,10 +127,14 @@ def p_if_statement(p):
         # if (t2) goto L1
         # p[6]
         # L1:
-        #
         t1 = new_temp()
         t2 = new_temp()
-        intermediate_code.append(t1 + ' = ' + p[3][1])
+        # intermediate_code.append(t1 + ' = ' + str(p[3][1]))
+        # intermediate_code.append(t2 + ' = ' + '!t1')
+        # intermediate_code.append('if ' + t2 + ' goto ' + new_label())
+        # intermediate_code.append(p[6][1])
+        # intermediate_code.append(new_label() + ':')
+        intermediate_code.append(t1 + ' = ' + str(p[3]))
         intermediate_code.append(t2 + ' = ' + '!t1')
         intermediate_code.append('if ' + t2 + ' goto ' + new_label())
         intermediate_code.append(p[6][1])
@@ -146,16 +151,57 @@ def p_if_statement(p):
         # L2:
         t1 = new_temp()
         t2 = new_temp()
-        intermediate_code.append(t1 + '=' +p[3])
-        intermediate_code()
-        intermediate_code()
-        intermediate_code()
-        intermediate_code()
-        intermediate_code()
-        intermediate_code()
-        intermediate_code()
+        L1 = new_label()
+        L2 = new_label()
+        intermediate_code.append(t1 + ' = ' + p[3][1])
+        intermediate_code.append(t2 + ' = ' + '!t1')
+        intermediate_code.append('if ' + t2 + ' goto ' + L1)
+        intermediate_code.append(p[6])
+        intermediate_code.append('goto ' + L2)
+        intermediate_code.append(L1 + ':')
+        intermediate_code.append(p[10])
+        intermediate_code.append(L2 + ':')
     elif len(p) == 19:
         p[0] = (('if', p[3], p[6]), ('elif', p[10], p[13]), ('else', p[17]))
+
+        # t1 = p[3]//conditional for if
+        # t2 = !t1
+        # t3 = p[10] //conditional for elif
+        # t4 = !t3
+        # if (t2) goto L1
+        # p[6]
+        # goto L3
+        # L1:
+        # if (t4) goto L2:
+        # p[13]
+        # goto L3
+        # L2:
+        # p[17]
+        # goto L3
+        # L3: //exit
+
+        t1 = new_temp()
+        t2 = new_temp()
+        t3 = new_temp()
+        t4 = new_temp()
+        L1 = new_label()
+        L2 = new_label()
+        L3 = new_label()
+        intermediate_code.append(t1 + ' = ' + str(p[3][1]))
+        intermediate_code.append(t2 + ' = ' + '!t1')
+        intermediate_code.append(t3 + ' = ' + str(p[10][1]))
+        intermediate_code.append(t4 + ' = ' + '!t3')
+        intermediate_code.append('if ' + t2 + ' goto ' + L2)
+        intermediate_code.append(p[6])
+        intermediate_code.append('goto ' + L3)
+        intermediate_code.append(L1 + ':')
+        intermediate_code.append('if ' + t4 + ' goto ' + L2)
+        intermediate_code.append(p[13])
+        intermediate_code.append('goto ' + L3)
+        intermediate_code.append(L2 + ':')
+        intermediate_code.append(p[17])
+        intermediate_code.append('goto ' + L3)
+        intermediate_code.append(L3 + ':')
 
 
 def p_while_statement(p):
@@ -163,22 +209,33 @@ def p_while_statement(p):
     while_statement : WHILE LPAREN expression RPAREN LBRACE statement RBRACE
     '''
     p[0] = ('while_statement', p[3], p[6])
-
-    intermediate_code.append('L4:')
-    intermediate_code.append('t3' + ' = ' + p[3][1])
-    intermediate_code.append('if ' + 't3' + '= false goto L3')
-    intermediate_code.append(p[6])
-    intermediate_code.append('if ' + 't3' + '= true goto L4')
-    intermediate_code.append('L3:')
+    t1 = new_temp()
+    t2 = new_temp()
+    L1 = new_label()  # Start of the loop
+    L2 = new_label()  # End of the loop
+    intermediate_code.append(L1 + ':')
+    intermediate_code.append(t1 + ' = ' + p[3][1])  # Evaluate the condition
+    intermediate_code.append(t2 + ' = ' + '!' + t1)  # Negate the condition
+    intermediate_code.append('if ' + t2 + ' goto ' + L2)  # If condition is false, jump to the end of the loop
+    intermediate_code.append(p[6])  # Execute the loop body
+    intermediate_code.append('goto ' + L1)  # Jump back to the start of the loop
+    intermediate_code.append(L2 + ':')  # End of the loop
 
 
 def p_do_while_statement(p):
-    '''do_while_statement : DO LBRACE statement RBRACE WHILE LPAREN expression RPAREN
     '''
-    p[0] = ('do_while_statement', p[3], p[6])
+    do_while_statement : DO LBRACE statement RBRACE WHILE LPAREN expression RPAREN SEMICOLON
+    '''
+    p[0] = ('do_while_statement', p[7], p[3])
+    t1 = new_temp()
+    L1 = new_label()
+    L2 = new_label()
 
-
-
+    intermediate_code.append(L1 + ':')
+    intermediate_code.append(p[3])
+    intermediate_code.append(t1 + ' = ' + p[7][1])
+    intermediate_code.append('if ' + t1 + ' goto ' + L1)
+    intermediate_code.append(L2 + ':')
 
 
 def p_return_statement(p):
@@ -209,6 +266,7 @@ def p_expression(p):
                 | FALSE
     '''
     p[0] = ('exp', p[1])
+    return p[1]
 
 
 def p_arithmetic_expression(p):
@@ -227,12 +285,24 @@ def p_arithmetic_expression(p):
                             | IDENTIFIER DIVIDE INTEGER
                             | IDENTIFIER DIVIDE FLOAT
                             | INTEGER PLUS INTEGER
+                            | INTEGER MULTIPLY INTEGER
+                            | INTEGER MINUS INTEGER
                             | INTEGER PLUS IDENTIFIER
+                            | INTEGER DIVIDE INTEGER
                             | INTEGER MODULUS IDENTIFIER
                             | INTEGER MODULUS INTEGER
+                            | FLOAT PLUS FLOAT
+                            | FLOAT MINUS FLOAT
+                            | FLOAT MULTIPLY FLOAT
+                            | FLOAT DIVIDE FLOAT
     '''
     p[0] = ('arithmetic_exp', p[2], p[1], p[3])
+    t1 = new_temp()
+    if type(p[1]) == float and type(p[3]) == float:
+        intermediate_code.append(t1 + ' = ' + str(p[1]) + p[2] + str(p[3]))
 
+    else:
+        intermediate_code.append(t1 + ' = ' + p[1] + p[2] + p[3])
 
 
 def p_assignment_expression(p):
@@ -252,14 +322,10 @@ def p_assignment_expression(p):
     '''
     if len(p) == 5:
         p[0] = ('assignment_exp', p[3], p[2], p[4])
-
-
+        intermediate_code.append(p[2] + ' = ' + str(p[4]))
     elif len(p) == 4:
         p[0] = ('assignment_exp', p[2], p[1], p[3])
-
-
-
-
+        intermediate_code.append(p[1] + ' = ' + p[4])
 
 
 def p_logical_expression(p):
@@ -268,13 +334,7 @@ def p_logical_expression(p):
                        | logical_and_expression
                        | logical_not_expression
     '''
-    p[0] = ('logical_or', p[2], p[1], p[3])
-    if p[2] == '||':
-        p[0] = ('logical_or', p[1], p[3])
-    elif p[2] in ['<', '>', '==', '!=', '<=', '>=']:
-        p[0] = ('relational_exp', p[1], p[2], p[3])
-    else:
-        p[0] = ('equality_exp', p[1], p[2], p[3])
+    p[0] = ('logical_exp', p[1])
 
 
 def p_logical_or_expression(p):
@@ -290,6 +350,7 @@ def p_logical_or_expression(p):
                             | equality_expression LOGICAL_OR equality_expression
     '''
     p[0] = ('logical_or', p[2], p[1], p[3])
+    intermediate_code.append(p[1][1] + ' OR ' + p[3][1])
 
 
 def p_logical_and_expression(p):
@@ -304,7 +365,9 @@ def p_logical_and_expression(p):
                            | equality_expression LOGICAL_AND relational_expression
                            | equality_expression LOGICAL_AND equality_expression
     '''
-    p[0] = ('logical_and', p[2], p[1], p[3])
+    # t1 = new_temp()
+    p[0] = ('logical_and', p[1], p[2], p[3])
+    # intermediate_code.append(t1 + '= ' + str(p[1]) + ' AND ' +str(p[3]))
 
 
 def p_logical_not_expression(p):
@@ -315,6 +378,8 @@ def p_logical_not_expression(p):
                                 | LOGICAL_NOT relational_expression
     '''
     p[0] = ('logical_not', p[1], p[2])
+    # t11 = new_temp()
+    # intermediate_code.append('t11 ' + '= ' + 'NOT ' + p[1][1])
 
 
 def p_equality_expression(p):
@@ -330,6 +395,11 @@ def p_equality_expression(p):
                            | IDENTIFIER NOT_EQUALS FALSE
     '''
     p[0] = ('equality_exp', p[2], p[1], p[3])
+    t1 = new_temp()
+    if p[2] == '==':
+        intermediate_code.append(t1 + '= ' + p[1] + p[2] + p[3])
+    else:
+        intermediate_code.append(t1 + '= ' + p[1] + p[2] + p[3])
 
 
 def p_relational_expression(p):
@@ -370,7 +440,15 @@ def p_relational_expression(p):
                                 | FLOAT GREATER_THAN_OR_EQUAL INTEGER
                                 | FLOAT GREATER_THAN_OR_EQUAL FLOAT
     '''
-    p[0] = ('relational_exp', p[2], p[1], p[3])
+    p[0] = ('relational_exp', p[1], p[2], p[3])
+    # if p[2] == '<':
+    #     intermediate_code.append(p[1] + ' LT ' + p[3])
+    # elif p[2] == '<=':
+    #     intermediate_code.append(p[1] + ' LTOE' + p[3])
+    # elif p[2] == '>':
+    #     intermediate_code.append(p[1] + ' GT ' + p[3])
+    # elif p[2] == '>=':
+    #     intermediate_code.append(p[1] + 'GTOE' + p[3])
 
 
 def p_unary_expression(p):
@@ -382,8 +460,10 @@ def p_unary_expression(p):
     '''
     if len(p) == 4:
         p[0] = ('unary_exp', p[1], p[2], p[3])
+        intermediate_code.append(p[1] + p[2])
     elif len(p) == 3:
         p[0] = ('unary_exp', p[1], p[2])
+        intermediate_code.append(p[1] + p[2])
     else:
         p[0] = ('unary_exp', p[1])
 
@@ -394,6 +474,7 @@ def p_function(p):
              | VOID IDENTIFIER LPAREN argument_list RPAREN LBRACE statement_list RBRACE
     '''
     p[0] = ('function', p[1], p[2], p[4], p[7])
+    intermediate_code.insert(1, f"{p[2]} FUNCTION START:")
 
 
 def p_function_call(p):
@@ -444,7 +525,7 @@ parser = yacc.yacc()
 ast = parser.parse(token_string)
 print('The parse tree for the input token string is: \n')
 print(ast)
-
+print('\n')
 # print the intermediate code
 for line in intermediate_code:
     print(line)

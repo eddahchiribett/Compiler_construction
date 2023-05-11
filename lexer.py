@@ -127,7 +127,7 @@ def t_IDENTIFIER(t):
 
 
 # Ignored characters (whitespace)
-t_ignore = ' \t\n\r\v'
+t_ignore = ' \t\v\r'
 
 
 # Define a regular expression for a newline character
@@ -136,10 +136,8 @@ def t_newline(t):
     t.lexer.lineno += len(t.value)
 
 
-# Error handling rule
 def t_error(t):
-    # print("Illegal character found '%s'" % t.value[0])
-    print("Illegal character found '{} ' ".format(t.value[0]))
+    print("Illegal token '%s' at line %d" % (t.value[0], t.lexer.lineno))
     t.lexer.skip(1)
 
 
@@ -147,26 +145,20 @@ def t_error(t):
 lexer = lex.lex()
 
 # Open the input text file
-with open('input.txt', 'r') as file:
+with open('input3.txt', 'r') as file:
     input_text = file.read()
     print(input_text)
 
 # Pass the input text to the lexer
 lexer.input(input_text)
 
-
 # Iterate over the lexer tokens and print them
 token_list = []
 
 # read the lexemes and append them to a list
 for tok in lexer:
-    # token_list.append(' {}, {} '.format(tok.type, tok.value))
-    print('Token: {} Value: {}'.format(tok.type, tok.value))
+    print('Token: {} , Value: {} '.format(tok.type, tok.value))
     token_list.append('{} '.format(tok.value))
-
 
 # convert the list of lexemes into a string of lexemes that match the tokens in the grammar
 token_string = ' '.join(token_list)
-# print(token_string)
-# print('\n')
-

@@ -30,6 +30,8 @@ expression  : assignment_expression
             | arithmetic_expression
             | relational_expression
             | equality_expression
+            | TRUE
+            | FALSE
 arithmetic_expression   : IDENTIFIER PLUS IDENTIFIER
                         | IDENTIFIER PLUS INTEGER
                         | IDENTIFIER MODULUS IDENTIFIER
@@ -44,9 +46,16 @@ arithmetic_expression   : IDENTIFIER PLUS IDENTIFIER
                         | IDENTIFIER DIVIDE INTEGER
                         | IDENTIFIER DIVIDE FLOAT
                         | INTEGER PLUS INTEGER
+                        | INTEGER MULTIPLY INTEGER
+                        | INTEGER MINUS INTEGER
                         | INTEGER PLUS IDENTIFIER
+                        | INTEGER DIVIDE INTEGER
                         | INTEGER MODULUS IDENTIFIER
                         | INTEGER MODULUS INTEGER
+                        | FLOAT PLUS FLOAT
+                        | FLOAT MINUS FLOAT
+                        | FLOAT MULTIPLY FLOAT
+                        | FLOAT DIVIDE FLOAT
 assignment_expression : type_keyword IDENTIFIER ASSIGN INTEGER
                       | type_keyword IDENTIFIER ASSIGN FLOAT
                       | type_keyword IDENTIFIER ASSIGN TRUE
